@@ -47,8 +47,8 @@ public class LightSensorBlockEntity extends BlockEntity {
 	}
 	
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
+	public void writeNbt(NbtCompound tag) {
 		tag.putInt("light", light);
-		return super.writeNbt(tag);
+		super.writeNbt(tag);
 	}
 }

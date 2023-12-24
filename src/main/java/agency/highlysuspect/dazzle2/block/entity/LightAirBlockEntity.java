@@ -134,8 +134,8 @@ public class LightAirBlockEntity extends BlockEntity {
 	}
 	
 	@Override
-	public NbtCompound writeNbt(NbtCompound tag) {
+	public void writeNbt(NbtCompound tag) {
 		tag.put("LightPanelPos", NbtHelper.fromBlockPos(panelPos));
-		return super.writeNbt(tag);
+		super.writeNbt(tag);
 	}
 }

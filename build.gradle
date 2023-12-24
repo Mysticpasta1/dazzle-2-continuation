@@ -1,84 +1,30 @@
 plugins {
-	id 'fabric-loom' version '0.8-SNAPSHOT'
+	id 'fabric-loom' version '0.12-SNAPSHOT'
 	id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = "${project.archives_base_name}-${project.minecraft_version}"
+archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
-sourceSets {
-	//Main source code, shipped with the mod
-	main {
-		resources {
-			//this line ships the generated resouces
-			srcDirs += "src/gen_out/resources"		
-		}
-	}
-	
-	//Source for data generators
-	gen {
-		//Make sure I can refer to things in the mod and in Minecraft from this source set.
-		compileClasspath += sourceSets.main.output
-		compileClasspath += sourceSets.main.compileClasspath
-		runtimeClasspath += sourceSets.main.output
-		runtimeClasspath += sourceSets.main.runtimeClasspath
-	}
-	
-	//Source set that holds all the generated data
-	//(I doubt you need a full-on source set for this, a bare folder would work just as well
-	// as long as you add it to the srcDirs of the main source set. Idk. Let's try things.)
-	gen_out {
-		//idk if theres anything to put here	
-	}
-}
-
-//Do not ask me what any of this means, I stole it from ae2-fabric.
-task runGenerator(type: net.fabricmc.loom.task.RunClientTask, dependsOn: downloadAssets, group: "d2") {
-	classpath = configurations.runtimeClasspath
-	classpath sourceSets.main.output
-	classpath sourceSets.gen.output
-}
-
-task cleanGeneratedResources(type: Delete, group: "d2") {
-	delete sourceSets.gen_out.resources.srcDirs
-}
-
-task tellMeSourceSetStuff() {
-	doLast {
-		sourceSets.each {
-			println "[ ${it.name} ]"
-			
-			//Actually removing the "test" source set seems to make some Loom things explode
-			//But I don't care about what's in it
-			if (it.name == "test") {
-				println "(unimportant)"
-				return;			
-			}
-			
-			println "\tsrc dirs:"
-			it.allJava.srcDirs.each {
-				println "\t\t$it"
-			}
-			println "\tout dirs:"
-			it.output.each {
-      	println "\t\t$it"
-      }
-			println "\tcompile classpath:"
-			it.compileClasspath.files.each {
-				println "\t\t$it.path" //Prints a lot btw
-			}
-		}
-	}
+repositories {
+	// Add repositories to retrieve artifacts from in here.
+	// You should only use this when depending on other mods because
+	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
+	// for more information about repositories.
 }
 
 dependencies {
+	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
 
@@ -91,42 +37,28 @@ processResources {
 }
 
 tasks.withType(JavaCompile).configureEach {
-	// ensure that the encoding is set to UTF-8, no matter what the system default is
-	// this fixes some edge cases with special characters not displaying correctly
-	// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-	// If Javadoc is generated, this must be specified in that task too.
-	it.options.encoding = "UTF-8"
+	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
+	it.options.release = 17
 }
 
 java {
+	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+	// if it is present.
+	// If you remove this line, sources will not be generated.
 	withSourcesJar()
 }
 
 jar {
-	//A file that (for now) must be manually copied into en_us.json after generation
-	exclude "en_us_include.json"
-	
-	//Mojang datagenerator .cache file
-	exclude ".cache"
-	
-	//ae2 fabric has this little line, i dont know if it's important!
-	finalizedBy "remapJar"
-	
-	from sourceSets.main.output.classesDirs
-	from sourceSets.main.output.resourcesDir
+	from("LICENSE") {
+		rename { "${it}_${project.archivesBaseName}"}
+	}
 }
 
 // configure the maven publication
 publishing {
 	publications {
 		mavenJava(MavenPublication) {
-			// add all the jars that should be included when publishing to maven
-			artifact(remapJar) {
-				builtBy remapJar
-			}
-			artifact(sourcesJar) {
-				builtBy remapSourcesJar
-			}
+			from components.java
 		}
 	}
 

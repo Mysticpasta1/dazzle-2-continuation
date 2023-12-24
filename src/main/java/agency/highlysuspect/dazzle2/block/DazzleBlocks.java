@@ -3,7 +3,6 @@ package agency.highlysuspect.dazzle2.block;
 import agency.highlysuspect.dazzle2.Init;
 import agency.highlysuspect.dazzle2.LampStyle;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
-import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.minecraft.block.*;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.DyeColor;
@@ -25,13 +24,13 @@ public class DazzleBlocks {
 	
 	public static final LightSensorBlock LIGHT_SENSOR = new LightSensorBlock(FabricBlockSettings.copyOf(Blocks.OBSERVER));
 	public static final InvisibleTorchBlock INVISIBLE_TORCH = new InvisibleTorchBlock(FabricBlockSettings.copyOf(Blocks.TORCH)
-		.nonOpaque().noCollision().breakByHand(true).breakInstantly()
+		.nonOpaque().noCollision().breakInstantly()
 		.luminance(state -> state.get(InvisibleTorchBlock.LIGHT))
 		.suffocates((state, world, pos) -> false)
 		.blockVision((state, world, pos) -> false)
 	);
 	public static final LightAirBlock LIGHT_AIR = new LightAirBlock(FabricBlockSettings.of(Material.AIR)
-		.nonOpaque().noCollision().breakByHand(true).breakInstantly()
+		.nonOpaque().noCollision().breakInstantly()
 		.luminance(state -> state.get(LightAirBlock.LIGHT))
 		.suffocates((state, world, pos) -> false)
 		.blockVision((state, world, pos) -> false)
@@ -47,7 +46,6 @@ public class DazzleBlocks {
 	public static final RedstoneTorchBlock DIM_REDSTONE_TORCH = new RedstoneTorchBlock(FabricBlockSettings.copyOf(Blocks.REDSTONE_TORCH)
 		.luminance(state -> state.get(Properties.LIT) ? 2 : 0)
 		.breakInstantly()
-		.breakByHand(true)
 		.drops(Init.id("blocks/dim_redstone_torch")) //Idk why, but if I don't have this the loot table is the same as air block
 	) {
 		//Protected constructor lmao, also i need to override this anyways
@@ -61,7 +59,6 @@ public class DazzleBlocks {
 		.luminance(state -> state.get(Properties.LIT) ? 2 : 0)
 		.dropsLike(DIM_REDSTONE_TORCH)
 		.breakInstantly()
-		.breakByHand(true)
 	) {
 		//Protected constructor lmao, also i need to override this anyways
 		@Override
@@ -76,9 +73,9 @@ public class DazzleBlocks {
 		}
 	});
 	
-	public static final EnumMap<DyeColor, ColorHolderBlock.Simple> DYED_SHROOMLIGHTS = sixteenColors(color -> new ColorHolderBlock.Simple(color, FabricBlockSettings.copyOf(Blocks.SHROOMLIGHT).breakByTool(FabricToolTags.HOES).materialColor(color)));
-	public static final Block POLISHED_SHROOMLIGHT = new Block(FabricBlockSettings.copyOf(Blocks.SHROOMLIGHT).breakByTool(FabricToolTags.HOES));
-	public static final EnumMap<DyeColor, ColorHolderBlock.Simple> DYED_POLISHED_SHROOMLIGHTS = sixteenColors(color -> new ColorHolderBlock.Simple(color, FabricBlockSettings.copyOf(Blocks.SHROOMLIGHT).breakByTool(FabricToolTags.HOES).materialColor(color)));
+	public static final EnumMap<DyeColor, ColorHolderBlock.Simple> DYED_SHROOMLIGHTS = sixteenColors(color -> new ColorHolderBlock.Simple(color, FabricBlockSettings.copyOf(Blocks.SHROOMLIGHT).requiresTool().materialColor(color)));
+	public static final Block POLISHED_SHROOMLIGHT = new Block(FabricBlockSettings.copyOf(Blocks.SHROOMLIGHT).requiresTool());
+	public static final EnumMap<DyeColor, ColorHolderBlock.Simple> DYED_POLISHED_SHROOMLIGHTS = sixteenColors(color -> new ColorHolderBlock.Simple(color, FabricBlockSettings.copyOf(Blocks.SHROOMLIGHT).requiresTool().materialColor(color)));
 	
 	public static final EnumMap<DyeColor, DyedEndRodBlock> DYED_END_RODS = sixteenColors(color -> new DyedEndRodBlock(color, FabricBlockSettings.copyOf(Blocks.END_ROD).materialColor(color)));
 	
