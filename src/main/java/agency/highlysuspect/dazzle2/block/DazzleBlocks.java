@@ -4,12 +4,13 @@ import agency.highlysuspect.dazzle2.Init;
 import agency.highlysuspect.dazzle2.LampStyle;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
+import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registry;
 import net.minecraft.world.BlockView;
 
 import java.util.EnumMap;
@@ -81,24 +82,23 @@ public class DazzleBlocks {
 	
 	public static void onInitialize() {
 		for(LampBlock lamp : LAMPS) {
-			Registry.register(Registry.BLOCK, lamp.style.toIdentifier(), lamp);
+			Registry.register(Registries.BLOCK, lamp.style.toIdentifier(), lamp);
 		}
 		
-		Registry.register(Registry.BLOCK, Init.id("light_sensor"), LIGHT_SENSOR);
-		Registry.register(Registry.BLOCK, Init.id("invisible_torch"), INVISIBLE_TORCH);
-		Registry.register(Registry.BLOCK, Init.id("light_air"), LIGHT_AIR);
-		Registry.register(Registry.BLOCK, Init.id("projected_light_panel"), PROJECTED_LIGHT_PANEL);
+		Registry.register(Registries.BLOCK, Init.id("light_sensor"), LIGHT_SENSOR);
+		Registry.register(Registries.BLOCK, Init.id("invisible_torch"), INVISIBLE_TORCH);
+		Registry.register(Registries.BLOCK, Init.id("light_air"), LIGHT_AIR);
+		Registry.register(Registries.BLOCK, Init.id("projected_light_panel"), PROJECTED_LIGHT_PANEL);
+		Registry.register(Registries.BLOCK, Init.id("dim_redstone_torch"), DIM_REDSTONE_TORCH);
+		Registry.register(Registries.BLOCK, Init.id("dim_redstone_wall_torch"), DIM_REDSTONE_WALL_TORCH);
 		
-		Registry.register(Registry.BLOCK, Init.id("dim_redstone_torch"), DIM_REDSTONE_TORCH);
-		Registry.register(Registry.BLOCK, Init.id("dim_redstone_wall_torch"), DIM_REDSTONE_WALL_TORCH);
+		FLARES.forEach((color, block) -> Registry.register(Registries.BLOCK, Init.id(color.asString() + "_flare"), block));
 		
-		FLARES.forEach((color, block) -> Registry.register(Registry.BLOCK, Init.id(color.asString() + "_flare"), block));
+		DYED_SHROOMLIGHTS.forEach((color, block) -> Registry.register(Registries.BLOCK, Init.id(color.asString() + "_shroomlight"), block));
+		Registry.register(Registries.BLOCK, Init.id("polished_shroomlight"), POLISHED_SHROOMLIGHT);
+		DYED_POLISHED_SHROOMLIGHTS.forEach((color, block) -> Registry.register(Registries.BLOCK, Init.id(color.asString() + "_polished_shroomlight"), block));
 		
-		DYED_SHROOMLIGHTS.forEach((color, block) -> Registry.register(Registry.BLOCK, Init.id(color.asString() + "_shroomlight"), block));
-		Registry.register(Registry.BLOCK, Init.id("polished_shroomlight"), POLISHED_SHROOMLIGHT);
-		DYED_POLISHED_SHROOMLIGHTS.forEach((color, block) -> Registry.register(Registry.BLOCK, Init.id(color.asString() + "_polished_shroomlight"), block));
-		
-		DYED_END_RODS.forEach((color, block) -> Registry.register(Registry.BLOCK, Init.id(color.asString() + "_end_rod"), block));
+		DYED_END_RODS.forEach((color, block) -> Registry.register(Registries.BLOCK, Init.id(color.asString() + "_end_rod"), block));
 	}
 	
 	private static <T> EnumMap<DyeColor, T> sixteenColors(Function<DyeColor, T> maker) {

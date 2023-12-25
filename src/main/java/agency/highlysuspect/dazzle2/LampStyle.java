@@ -10,9 +10,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.Arrays;
 import java.util.List;
@@ -66,7 +66,7 @@ public class LampStyle {
 	}
 	
 	public LampBlock lookupBlock() {
-		return (LampBlock) Registry.BLOCK.get(toIdentifier());
+		return (LampBlock) Registries.BLOCK.get(toIdentifier());
 	}
 
 	public LampStyle withMode(LampStyle.Mode newMode) {

@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -89,7 +90,7 @@ public class InvisibleTorchBlock extends Block {
 			if(nextLevel == 16) nextLevel = 1;
 			
 			world.setBlockState(pos, state.with(LIGHT, nextLevel));
-			world.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.6f, nextLevel / 15f + 0.5f);
+			world.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.BLOCKS, 0.6f, nextLevel / 15f + 0.5f);
 			return ActionResult.SUCCESS;
 		} else return super.onUse(state, world, pos, player, hand, hit);
 	}

@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 //Copypaste of FlareParticleEffect
 //Don't learn how to write particles from this. I'm just slapping stuff together.
@@ -27,7 +27,7 @@ public record DyedEndRodParticleEffect(int color) implements ParticleEffect {
 	@SuppressWarnings("ConstantConditions") //The particle was registered.
 	@Override
 	public String asString() {
-		return Registry.PARTICLE_TYPE.getId(DazzleParticleTypes.DYED_END_ROD).toString();
+		return Registries.PARTICLE_TYPE.getId(DazzleParticleTypes.DYED_END_ROD).toString();
 	}
 	
 	public static class FactoryThingie implements Factory<DyedEndRodParticleEffect> {

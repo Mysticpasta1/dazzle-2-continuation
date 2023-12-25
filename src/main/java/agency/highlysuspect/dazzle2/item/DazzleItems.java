@@ -2,28 +2,42 @@ package agency.highlysuspect.dazzle2.item;
 
 import agency.highlysuspect.dazzle2.Init;
 import agency.highlysuspect.dazzle2.block.DazzleBlocks;
-import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
+import net.fabricmc.fabric.impl.itemgroup.FabricItemGroup;
+import net.fabricmc.fabric.impl.itemgroup.FabricItemGroupBuilderImpl;
 import net.minecraft.block.Block;
+import net.minecraft.block.WallMountedBlock;
 import net.minecraft.item.*;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.math.Direction;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DazzleItems {
-	public static final ItemGroup owo = FabricItemGroupBuilder.build(Init.id("group"), DazzleItems::icon);
-	
+	public static final List<Supplier<? extends ItemConvertible>> MAIN_BLOCKS = new ArrayList<>();
+	public static final ItemGroup owo = new FabricItemGroupBuilderImpl(Init.id("group")).icon(DazzleItems::icon).entries((displayContext, entries) -> {
+		MAIN_BLOCKS.forEach((itemLike -> entries.add(itemLike.get())));
+	}).build();
+
+	public static ItemConvertible addToMainTab (ItemConvertible itemLike) {
+		MAIN_BLOCKS.add(() -> itemLike);
+		return itemLike;
+	}
+
 	public static final List<BlockItem> LAMPS = DazzleBlocks.LAMPS.stream().map(DazzleItems::blockItem).collect(Collectors.toList());
 	public static final BlockItem LIGHT_SENSOR = blockItem(DazzleBlocks.LIGHT_SENSOR);
 	public static final BlockItem INVISIBLE_TORCH = blockItem(DazzleBlocks.INVISIBLE_TORCH);
 	public static final BlockItem PROJECTED_LIGHT_PANEL = blockItem(DazzleBlocks.PROJECTED_LIGHT_PANEL);
 	
-	public static final WallStandingBlockItem DIM_REDSTONE_TORCH = new WallStandingBlockItem(DazzleBlocks.DIM_REDSTONE_TORCH, DazzleBlocks.DIM_REDSTONE_WALL_TORCH, settings());
+	public static final VerticallyAttachableBlockItem DIM_REDSTONE_TORCH = new VerticallyAttachableBlockItem(DazzleBlocks.DIM_REDSTONE_TORCH, DazzleBlocks.DIM_REDSTONE_WALL_TORCH, settings(), Direction.NORTH);
 	
 	public static final EnumMap<DyeColor, BlockItem> FLARES = sixteenColorBlockItems(DazzleBlocks.FLARES);
 	
@@ -52,7 +66,7 @@ public class DazzleItems {
 	}
 	
 	private static Item.Settings settings() {
-		return new Item.Settings().group(owo);
+		return new Item.Settings();
 	}
 	
 	private static BlockItem blockItem(Block b) {
@@ -77,8 +91,9 @@ public class DazzleItems {
 	}
 	
 	private static void registerBlockItem(BlockItem item) {
-		Identifier id = Registry.BLOCK.getId(item.getBlock());
-		Registry.register(Registry.ITEM, id, item);
+		Identifier id = Registries.BLOCK.getId(item.getBlock());
+		addToMainTab(item);
+		Registry.register(Registries.ITEM, id, item);
 	}
 	
 	private static void registerBlockItems(Collection<BlockItem> blockItems) {

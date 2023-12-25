@@ -5,7 +5,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
 
 public record FlareParticleEffect(int color) implements ParticleEffect {
 	@Override
@@ -25,7 +25,7 @@ public record FlareParticleEffect(int color) implements ParticleEffect {
 	@SuppressWarnings("ConstantConditions") //The particle was registered.
 	@Override
 	public String asString() {
-		return Registry.PARTICLE_TYPE.getId(DazzleParticleTypes.FLARE).toString();
+		return Registries.PARTICLE_TYPE.getId(DazzleParticleTypes.FLARE).toString();
 	}
 	
 	public static class FactoryThingie implements ParticleEffect.Factory<FlareParticleEffect> {
