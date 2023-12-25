@@ -9,6 +9,7 @@ import net.minecraft.block.WallMountedBlock;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 
 public class DazzleItems {
 	public static final List<Supplier<? extends ItemConvertible>> MAIN_BLOCKS = new ArrayList<>();
-	public static final ItemGroup owo = new FabricItemGroupBuilderImpl(Init.id("group")).icon(DazzleItems::icon).entries((displayContext, entries) -> {
+	public static final ItemGroup owo = new FabricItemGroupBuilderImpl().icon(DazzleItems::icon).displayName(Text.literal("Dazzle 2")).entries((displayContext, entries) -> {
 		MAIN_BLOCKS.forEach((itemLike -> entries.add(itemLike.get())));
 	}).build();
 

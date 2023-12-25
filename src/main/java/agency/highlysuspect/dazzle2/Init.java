@@ -7,6 +7,8 @@ import agency.highlysuspect.dazzle2.etc.DazzleParticleTypes;
 import agency.highlysuspect.dazzle2.item.DazzleItemTags;
 import agency.highlysuspect.dazzle2.item.DazzleItems;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,6 +35,8 @@ public class Init implements ModInitializer {
 		
 		DazzleItems.onInitialize();
 		DazzleItemTags.onInitialize();
+
+		Registry.register(Registries.ITEM_GROUP, Init.id("group"), DazzleItems.owo);
 		
 		DazzleParticleTypes.onInitialize();
 	}

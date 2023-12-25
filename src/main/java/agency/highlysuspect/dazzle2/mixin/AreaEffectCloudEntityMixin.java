@@ -23,7 +23,7 @@ public class AreaEffectCloudEntityMixin {
 		)
 	)
 	private void whatTicking(CallbackInfo ci) {
-		World world = ((AreaEffectCloudEntity) (Object) this).world;
+		World world = ((AreaEffectCloudEntity) (Object) this).getWorld();
 		if(world == null) return; //lol
 		
 		Box box = ((AreaEffectCloudEntity) (Object) this).getBoundingBox();

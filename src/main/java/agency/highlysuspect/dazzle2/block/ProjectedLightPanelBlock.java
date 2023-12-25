@@ -34,7 +34,7 @@ import java.util.List;
 
 public class ProjectedLightPanelBlock extends Block {
 	public ProjectedLightPanelBlock(Settings settings) {
-		super(settings);
+		super(settings.pistonBehavior(PistonBehavior.DESTROY));
 		
 		setDefaultState(getDefaultState().with(FACING, Direction.NORTH).with(POWER, 0));
 	}
@@ -96,11 +96,6 @@ public class ProjectedLightPanelBlock extends Block {
 			if(be == null) continue;
 			if(be.belongsTo(pos)) world.setBlockState(p, Blocks.AIR.getDefaultState());
 		}
-	}
-	
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
 	}
 	
 	@Override

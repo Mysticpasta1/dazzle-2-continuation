@@ -26,7 +26,7 @@ public class PotionEntityMixin {
 	private void whenApplyingSplashPotion(List<StatusEffectInstance> effects, Entity what, CallbackInfo ci) {
 		for(StatusEffectInstance inst : effects) {
 			if(inst.getEffectType() == StatusEffects.INVISIBILITY) {
-				World world = ((PotionEntity) (Object) this).world;
+				World world = ((PotionEntity) (Object) this).getWorld();
 				Box box = ((PotionEntity) (Object) this).getBoundingBox().expand(4, 2, 4);
 				BlockPos.stream(box).forEach(pos -> {
 					BlockState state = world.getBlockState(pos);

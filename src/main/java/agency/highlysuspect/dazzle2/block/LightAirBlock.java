@@ -23,7 +23,7 @@ import java.util.*;
 
 public class LightAirBlock extends Block implements BlockEntityProvider {
 	public LightAirBlock(Settings settings) {
-		super(settings);
+		super(settings.pistonBehavior(PistonBehavior.DESTROY));
 		
 		setDefaultState(getDefaultState().with(LIGHT, 15));
 	}
@@ -45,11 +45,6 @@ public class LightAirBlock extends Block implements BlockEntityProvider {
 	@Override
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
 		recursiveCheck(world, pos);
-	}
-	
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
 	}
 	
 	@Override

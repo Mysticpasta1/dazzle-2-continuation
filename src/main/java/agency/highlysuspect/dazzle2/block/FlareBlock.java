@@ -20,15 +20,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class FlareBlock extends ColorHolderBlock.Simple implements BlockEntityProvider {
 	public FlareBlock(DyeColor color, Settings settings) {
-		super(color, settings);
+		super(color, settings.pistonBehavior(PistonBehavior.DESTROY));
 	}
 	
 	public static final VoxelShape OUTLINE = VoxelShapes.cuboid(3/16d, 3/16d, 3/16d, 13/16d, 15/16d, 13/16d);
-	
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
-	}
 	
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {

@@ -30,7 +30,7 @@ public class DazzleBlocks {
 		.suffocates((state, world, pos) -> false)
 		.blockVision((state, world, pos) -> false)
 	);
-	public static final LightAirBlock LIGHT_AIR = new LightAirBlock(FabricBlockSettings.of(Material.AIR)
+	public static final LightAirBlock LIGHT_AIR = new LightAirBlock(FabricBlockSettings.copyOf(Blocks.AIR)
 		.nonOpaque().noCollision().breakInstantly()
 		.luminance(state -> state.get(LightAirBlock.LIGHT))
 		.suffocates((state, world, pos) -> false)
