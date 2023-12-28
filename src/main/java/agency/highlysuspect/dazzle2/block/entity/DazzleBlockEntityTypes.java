@@ -1,21 +1,21 @@
 package agency.highlysuspect.dazzle2.block.entity;
 
-import agency.highlysuspect.dazzle2.Init;
 import agency.highlysuspect.dazzle2.block.DazzleBlocks;
 import agency.highlysuspect.dazzle2.block.FlareBlock;
-import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 public class DazzleBlockEntityTypes {
-	public static final BlockEntityType<LightSensorBlockEntity> LIGHT_SENSOR = FabricBlockEntityTypeBuilder.create(LightSensorBlockEntity::new, DazzleBlocks.LIGHT_SENSOR).build(null);
-	public static final BlockEntityType<LightAirBlockEntity> LIGHT_AIR = FabricBlockEntityTypeBuilder.create(LightAirBlockEntity::new, DazzleBlocks.LIGHT_AIR).build(null);
-	public static final BlockEntityType<FlareBlockEntity> FLARE = FabricBlockEntityTypeBuilder.create(FlareBlockEntity::new, DazzleBlocks.FLARES.values().toArray(new FlareBlock[0])).build(null);
+	private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(RegistryKeys.BLOCK_ENTITY_TYPE, "dazzle");
+
+	public static final RegistryObject<BlockEntityType<LightSensorBlockEntity>> LIGHT_SENSOR = BLOCK_ENTITIES.register("light_sensor", () -> BlockEntityType.Builder.create(LightSensorBlockEntity::new, DazzleBlocks.LIGHT_SENSOR.get()).build(null));
+	public static final RegistryObject<BlockEntityType<LightAirBlockEntity>> LIGHT_AIR = BLOCK_ENTITIES.register("light_air", () -> BlockEntityType.Builder.create(LightAirBlockEntity::new, DazzleBlocks.LIGHT_AIR.get()).build(null));
+	public static final RegistryObject<BlockEntityType<FlareBlockEntity>> FLARE = BLOCK_ENTITIES.register("flare", () -> BlockEntityType.Builder.create(FlareBlockEntity::new, DazzleBlocks.FLARES.values().toArray(FlareBlock[]::new)).build(null));
 	
-	public static void onInitialize() {
-		Registry.register(Registries.BLOCK_ENTITY_TYPE, Init.id("light_sensor"), LIGHT_SENSOR);
-		Registry.register(Registries.BLOCK_ENTITY_TYPE, Init.id("light_air"), LIGHT_AIR);
-		Registry.register(Registries.BLOCK_ENTITY_TYPE, Init.id("flare"), FLARE);
+	public static void onInitialize(IEventBus bus) {
+		BLOCK_ENTITIES.register(bus);
 	}
 }

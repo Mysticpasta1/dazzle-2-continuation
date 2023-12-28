@@ -19,7 +19,7 @@ public class RedstoneWireBlockMixin {
 		cancellable = true
 	)
 	private static void connectsTo(BlockState state, @Nullable Direction dir, CallbackInfoReturnable<Boolean> cir) {
-		if(state.getBlock() == DazzleBlocks.LIGHT_SENSOR) {
+		if(state.getBlock() == DazzleBlocks.LIGHT_SENSOR.get()) {
 			cir.setReturnValue(state.get(LightSensorBlock.FACING) == dir);
 		}
 	}

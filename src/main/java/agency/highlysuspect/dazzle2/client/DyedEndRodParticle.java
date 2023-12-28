@@ -10,10 +10,13 @@ import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import static net.minecraftforge.api.distmarker.Dist.CLIENT;
 
 //Based on a copy-and-paste of EndRodParticle because lol private constructor.
 //Added an extra parameter for setTargetColor.
-@Environment(EnvType.CLIENT)
+@OnlyIn(CLIENT)
 public class DyedEndRodParticle extends AnimatedParticle {
 	private DyedEndRodParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider, int tint) {
 		super(world, x, y, z, spriteProvider, -5.0E-4F);
@@ -48,7 +51,7 @@ public class DyedEndRodParticle extends AnimatedParticle {
 		this.repositionFromBoundingBox();
 	}
 	
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(CLIENT)
 	public static class Factory implements ParticleFactory<DyedEndRodParticleEffect> {
 		private final SpriteProvider spriteProvider;
 		

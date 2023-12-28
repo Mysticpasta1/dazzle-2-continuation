@@ -2,8 +2,6 @@ package agency.highlysuspect.dazzle2.block;
 
 import agency.highlysuspect.dazzle2.LampStyle;
 import agency.highlysuspect.dazzle2.item.DazzleItemTags;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,6 +19,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.OnlyIn;
+
+import static net.minecraftforge.api.distmarker.Dist.CLIENT;
 
 public abstract class LampBlock extends ColorHolderBlock.Simple {
 	public LampBlock(LampStyle style, Settings settings) {
@@ -34,7 +35,7 @@ public abstract class LampBlock extends ColorHolderBlock.Simple {
 	
 	public static final BooleanProperty INVERTED = BooleanProperty.of("inverted");
 	
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(CLIENT)
 	public boolean isSideInvisible(BlockState state, BlockState stateFrom, Direction direction) {
 		return style.theme.isTransparent && (stateFrom.isOf(this) || super.isSideInvisible(state, stateFrom, direction));
 	}

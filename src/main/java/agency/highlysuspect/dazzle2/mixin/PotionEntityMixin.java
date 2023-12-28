@@ -31,7 +31,7 @@ public class PotionEntityMixin {
 				BlockPos.stream(box).forEach(pos -> {
 					BlockState state = world.getBlockState(pos);
 					if(state.isIn(DazzleBlockTags.MAKE_INVISIBLE_TORCH)) {
-						world.setBlockState(pos, DazzleBlocks.INVISIBLE_TORCH.makeInvisible(world, pos, state));
+						world.setBlockState(pos, DazzleBlocks.INVISIBLE_TORCH.get().makeInvisible(world, pos, state));
 					}
 				});
 			}

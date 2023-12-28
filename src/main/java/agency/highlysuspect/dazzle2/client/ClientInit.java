@@ -57,23 +57,23 @@ public class ClientInit implements ClientModInitializer {
 			LampBlock lamp = (LampBlock) state.getBlock();
 			return lamp(tintIndex, lamp.getColor(), lamp.lightFromState(state));
 		}, blocks(DazzleBlocks.LAMPS));
-		
+
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
 			LampBlock lamp = (LampBlock) ((BlockItem) stack.getItem()).getBlock();
 			return lamp(tintIndex, lamp.getColor(), 15);
 		}, items(DazzleItems.LAMPS));
-		
+
 		//Flares
 		//Even though the block model itself is invisible, this is visible on blockcrack particles.
 		ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> ((ColorHolderBlock) state.getBlock()).getColor().getMapColor().color,
 			blocks(DazzleBlocks.FLARES.values()));
-		
+
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
 			if(tintIndex == 1) {
 				return ((ColorHolderBlock) ((BlockItem) stack.getItem()).getBlock()).getColor().getMapColor().color; //color
 			} else return 0xFFFFFF;
 		}, items(DazzleItems.FLARES.values()));
-		
+
 		//Dyed shroomlights
 		ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> shroom(tintIndex, ((ColorHolderBlock) state.getBlock()).getColor()),
 			blocks(DazzleBlocks.DYED_SHROOMLIGHTS.values(), DazzleBlocks.DYED_POLISHED_SHROOMLIGHTS.values()));
@@ -88,6 +88,8 @@ public class ClientInit implements ClientModInitializer {
 		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> rod(tintIndex, ((ColorHolderBlock) ((BlockItem) stack.getItem()).getBlock()).getColor()),
 			items(DazzleItems.DYED_END_RODS.values()));
 	}
+
+	
 	
 	private static int multiplyAll(int color, float mult) {
 		return multiplyRgb(color, mult, mult, mult);

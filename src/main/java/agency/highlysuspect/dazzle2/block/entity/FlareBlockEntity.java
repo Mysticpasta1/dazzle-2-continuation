@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 public class FlareBlockEntity extends BlockEntity {
 	public FlareBlockEntity(BlockPos pos, BlockState state) {
-		super(DazzleBlockEntityTypes.FLARE, pos, state);
+		super(DazzleBlockEntityTypes.FLARE.get(), pos, state);
 	}
 	
 	//TODO 1.17: client-side only ticking, this does not need to tick on the server

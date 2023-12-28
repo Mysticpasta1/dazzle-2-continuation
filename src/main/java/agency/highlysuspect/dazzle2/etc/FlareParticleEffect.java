@@ -2,12 +2,16 @@ package agency.highlysuspect.dazzle2.etc;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.registry.Registries;
 
 public record FlareParticleEffect(int color) implements ParticleEffect {
+	public static final Codec<FlareParticleEffect> CODEC = RecordCodecBuilder.create(inst -> inst.group(Codec.INT.fieldOf("color").forGetter(FlareParticleEffect::color)).apply(inst, FlareParticleEffect::new));
+
 	@Override
 	public ParticleType<?> getType() {
 		return DazzleParticleTypes.FLARE;

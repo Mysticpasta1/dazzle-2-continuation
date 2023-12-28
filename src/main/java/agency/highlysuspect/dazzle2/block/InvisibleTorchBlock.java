@@ -4,8 +4,6 @@ import agency.highlysuspect.dazzle2.Init;
 import agency.highlysuspect.dazzle2.Junk;
 import agency.highlysuspect.dazzle2.LampStyle;
 import agency.highlysuspect.dazzle2.item.DazzleItemTags;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
@@ -29,9 +27,12 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+
+import static net.minecraftforge.api.distmarker.Dist.CLIENT;
 
 public class InvisibleTorchBlock extends Block {
 	public InvisibleTorchBlock(Settings settings) {
@@ -113,7 +114,7 @@ public class InvisibleTorchBlock extends Block {
 		return VoxelShapes.empty();
 	}
 	
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
 		tooltip.add(Text.translatable("dazzle.craft_invisible_torch"));

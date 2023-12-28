@@ -38,13 +38,13 @@ public class FlareBlock extends ColorHolderBlock.Simple implements BlockEntityPr
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return DazzleBlockEntityTypes.FLARE.instantiate(pos, state);
+		return DazzleBlockEntityTypes.FLARE.get().instantiate(pos, state);
 	}
 	
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		if(world.isClient) return Util.castTicker(type, DazzleBlockEntityTypes.FLARE, FlareBlockEntity::tickClient);
+		if(world.isClient) return Util.castTicker(type, DazzleBlockEntityTypes.FLARE.get(), FlareBlockEntity::tickClient);
 		else return null;
 	}
 }

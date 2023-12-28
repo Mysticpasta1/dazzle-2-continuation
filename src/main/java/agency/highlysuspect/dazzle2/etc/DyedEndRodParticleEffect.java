@@ -2,6 +2,7 @@ package agency.highlysuspect.dazzle2.etc;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.serialization.Codec;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
@@ -10,6 +11,7 @@ import net.minecraft.registry.Registries;
 //Copypaste of FlareParticleEffect
 //Don't learn how to write particles from this. I'm just slapping stuff together.
 public record DyedEndRodParticleEffect(int color) implements ParticleEffect {
+	public static final Codec<DyedEndRodParticleEffect> CODEC = Codec.INT.xmap(DyedEndRodParticleEffect::new, DyedEndRodParticleEffect::getColor);
 	public int getColor() {
 		return color;
 	}

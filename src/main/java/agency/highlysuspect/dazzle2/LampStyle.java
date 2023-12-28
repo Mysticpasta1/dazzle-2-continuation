@@ -47,8 +47,8 @@ public class LampStyle {
 	
 	public static BlockState findLampBlockstate(LampStyle.Color color, LampStyle.Theme theme, LampStyle.Mode mode) {
 		LampStyle yes = new LampStyle(color, theme, mode);
-		for(LampBlock haha : DazzleBlocks.LAMPS) {
-			if(haha.style.equals(yes)) return haha.getDefaultState();
+		for(var haha : DazzleBlocks.LAMPS) {
+			if(haha.get().style.equals(yes)) return haha.get().getDefaultState();
 		}
 		
 		return Blocks.AIR.getDefaultState();

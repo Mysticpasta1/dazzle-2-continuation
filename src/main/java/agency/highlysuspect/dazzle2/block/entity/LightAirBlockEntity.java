@@ -4,7 +4,6 @@ import agency.highlysuspect.dazzle2.Init;
 import agency.highlysuspect.dazzle2.block.DazzleBlocks;
 import agency.highlysuspect.dazzle2.block.LightAirBlock;
 import agency.highlysuspect.dazzle2.block.ProjectedLightPanelBlock;
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -21,7 +20,7 @@ import java.util.Optional;
 
 public class LightAirBlockEntity extends BlockEntity {
 	public LightAirBlockEntity(BlockPos pos, BlockState state) {
-		super(DazzleBlockEntityTypes.LIGHT_AIR, pos, state);
+		super(DazzleBlockEntityTypes.LIGHT_AIR.get(), pos, state);
 	}
 	
 	//todo this isn't extensible to other reasons that nonplaceable hidden lights might be created, which was the intention.
@@ -45,36 +44,36 @@ public class LightAirBlockEntity extends BlockEntity {
 	}
 	
 	//Returns TRUE when the light should stay, FALSE when it has been removed, and DEFAULT when it's indeterminate
-	public TriState check() {
+	public void check() {
 		assert world != null;
 		assert pos != null;
 		
-		if(!world.getBlockState(pos).isOf(DazzleBlocks.LIGHT_AIR)) {
+		if(!world.getBlockState(pos).isOf(DazzleBlocks.LIGHT_AIR.get())) {
 			//what happpened here?
 			Init.log("stale light BE at {}?", pos);
-			return TriState.DEFAULT;
+			return;
 		}
 		
 		//Make sure that I'm in line with the panel
 		Optional<Direction> dirBetween_ = findDirBetween(pos, panelPos);
-		if(dirBetween_.isEmpty()) return TriState.FALSE;
+		if(dirBetween_.isEmpty()) return;
 		Direction dirBetween = dirBetween_.get();
 		
 		//don't worry about it right now, wait for the panel to be loaded as well
-		if(!world.isChunkLoaded(panelPos.getX() >> 4, panelPos.getZ() >> 4)) return TriState.DEFAULT;
+		if(!world.isChunkLoaded(panelPos.getX() >> 4, panelPos.getZ() >> 4)) return;
 		
 		//Make sure it's actually a light panel at this location
 		BlockState panelState = world.getBlockState(panelPos);
-		if(!panelState.isOf(DazzleBlocks.PROJECTED_LIGHT_PANEL)) {
+		if(!panelState.isOf(DazzleBlocks.PROJECTED_LIGHT_PANEL.get())) {
 			bail();
-			return TriState.FALSE;
+			return;
 		}
 		
 		//Make sure the panel is pointing towards me
 		Direction panelDirection = panelState.get(ProjectedLightPanelBlock.FACING);
 		if(dirBetween != panelDirection) {
 			bail();
-			return TriState.FALSE;
+			return;
 		}
 		
 		//Make sure I have the right power level for the panel's power level
@@ -82,13 +81,13 @@ public class LightAirBlockEntity extends BlockEntity {
 		int stepsAway = MathHelper.ceil(distance / (float) ProjectedLightPanelBlock.BEAM_SEGMENT_LENGTH);
 		if(16 - stepsAway <= 0) { //light can't reach here even at full power
 			bail();
-			return TriState.FALSE;
+			return;
 		}
 		int panelPower = panelState.get(ProjectedLightPanelBlock.POWER);
 		int expectedLightLevel = panelPower - stepsAway + 1;
 		if(expectedLightLevel <= 0) {
 			bail();
-			return TriState.FALSE;
+			return;
 		} else if(getCachedState().get(LightAirBlock.LIGHT) != expectedLightLevel) {
 			world.setBlockState(pos, getCachedState().with(LightAirBlock.LIGHT, expectedLightLevel));
 		}
@@ -97,15 +96,12 @@ public class LightAirBlockEntity extends BlockEntity {
 		ItemPlacementContext haha = new AutomaticItemPlacementContext(world, pos, Direction.UP, ItemStack.EMPTY, Direction.UP);
 		for(BlockPos iterpos : BlockPos.iterate(pos, panelPos)) {
 			BlockState there = world.getBlockState(iterpos);
-			if(there.isOf(DazzleBlocks.PROJECTED_LIGHT_PANEL) || there.isOf(DazzleBlocks.LIGHT_AIR) || there.canReplace(haha))
+			if(there.isOf(DazzleBlocks.PROJECTED_LIGHT_PANEL.get()) || there.isOf(DazzleBlocks.LIGHT_AIR.get()) || there.canReplace(haha))
 				continue;
 			
 			bail();
-			return TriState.FALSE;
+			return;
 		}
-		
-		//Lgtm
-		return TriState.TRUE;
 	}
 	
 	private void bail() {

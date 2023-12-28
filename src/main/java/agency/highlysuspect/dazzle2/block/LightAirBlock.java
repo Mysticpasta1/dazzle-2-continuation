@@ -2,7 +2,6 @@ package agency.highlysuspect.dazzle2.block;
 
 import agency.highlysuspect.dazzle2.block.entity.DazzleBlockEntityTypes;
 import agency.highlysuspect.dazzle2.block.entity.LightAirBlockEntity;
-import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
@@ -85,7 +84,7 @@ public class LightAirBlock extends Block implements BlockEntityProvider {
 				for(Direction d : Direction.values()) {
 					BlockPos hoo = scan.offset(d);
 					BlockState state = world.getBlockState(hoo);
-					if(state.isOf(DazzleBlocks.PROJECTED_LIGHT_PANEL) || state.isOf(DazzleBlocks.LIGHT_AIR)) {
+					if(state.isOf(DazzleBlocks.PROJECTED_LIGHT_PANEL.get()) || state.isOf(DazzleBlocks.LIGHT_AIR.get())) {
 						//                                     This sucks, it's a linear search
 						if(!positionsToCheck.contains(hoo) && !positionsToScan.contains(hoo)) positionsToScan.add(hoo);
 					}
@@ -95,8 +94,8 @@ public class LightAirBlock extends Block implements BlockEntityProvider {
 			//and make them all check
 			for(BlockPos hoo : positionsToCheck) {
 				BlockState state = world.getBlockState(hoo);
-				if(state.isOf(DazzleBlocks.PROJECTED_LIGHT_PANEL)) {
-					DazzleBlocks.PROJECTED_LIGHT_PANEL.check(world, hoo, state);
+				if(state.isOf(DazzleBlocks.PROJECTED_LIGHT_PANEL.get())) {
+					DazzleBlocks.PROJECTED_LIGHT_PANEL.get().check(world, hoo, state);
 				} else { //always a fellow projected light
 					check(world, hoo);
 				}
@@ -107,21 +106,20 @@ public class LightAirBlock extends Block implements BlockEntityProvider {
 		}
 	}
 	
-	private TriState check(World world, BlockPos pos) {
-		LightAirBlockEntity be = DazzleBlockEntityTypes.LIGHT_AIR.get(world, pos);
-		if(be != null) return be.check();
-		else return TriState.DEFAULT;
+	private void check(World world, BlockPos pos) {
+		LightAirBlockEntity be = DazzleBlockEntityTypes.LIGHT_AIR.get().get(world, pos);
+		if(be != null) be.check();
 	}
 	
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return DazzleBlockEntityTypes.LIGHT_AIR.instantiate(pos, state);
+		return DazzleBlockEntityTypes.LIGHT_AIR.get().instantiate(pos, state);
 	}
 	
 	public void placeWithOwner(World world, BlockPos pos, int level, BlockPos ownerPos) {
 		world.setBlockState(pos, withLightLevel(level), 2 | 16); //don't emit block updates | update listeners
-		LightAirBlockEntity be = DazzleBlockEntityTypes.LIGHT_AIR.get(world, pos);
+		LightAirBlockEntity be = DazzleBlockEntityTypes.LIGHT_AIR.get().get(world, pos);
 		if(be != null) be.setOwner(ownerPos);
 	}
 }
