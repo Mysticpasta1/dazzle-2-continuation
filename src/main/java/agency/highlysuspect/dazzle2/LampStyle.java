@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class LampStyle {
@@ -61,7 +62,7 @@ public class LampStyle {
 		return Init.id(toName());
 	}
 	
-	public LampBlock instantiateBlock(Block.Settings settings) {
+	public Supplier<LampBlock> instantiateBlock(Block.Settings settings) {
 		return mode.constructor.apply(this, theme.processSettings(settings));
 	}
 	
@@ -146,16 +147,16 @@ public class LampStyle {
 	}
 	
 	public static class Mode implements Prop {
-		private Mode(String name, BiFunction<LampStyle, Block.Settings, LampBlock> constructor) {
+		private Mode(String name, BiFunction<LampStyle, Block.Settings, Supplier<LampBlock>> constructor) {
 			this.name = name;
 			this.constructor = constructor;
 		}
 		
 		public final String name;
-		public final BiFunction<LampStyle, Block.Settings, LampBlock> constructor;
+		public final BiFunction<LampStyle, Block.Settings, Supplier<LampBlock>> constructor;
 		
-		public static final Mode DIGITAL = new Mode("digital", LampBlock.Digital::new);
-		public static final Mode ANALOG = new Mode("analog", LampBlock.Analog::new);
+		public static final Mode DIGITAL = new Mode("digital", (style, settings) -> () -> new LampBlock.Digital(style, settings));
+		public static final Mode ANALOG = new Mode("analog", (style, settings) -> () -> new LampBlock.Analog(style, settings));
 		
 		public static final List<Mode> ALL = ImmutableList.of(DIGITAL, ANALOG);
 		

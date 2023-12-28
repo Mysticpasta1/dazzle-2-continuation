@@ -5,6 +5,7 @@ import agency.highlysuspect.dazzle2.LampStyle;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
@@ -12,17 +13,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.registry.Registry;
 import net.minecraft.world.BlockView;
+import net.minecraftforge.registries.DeferredRegister;
 
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DazzleBlocks {
-	public static final List<LampBlock> LAMPS = LampStyle.ALL.stream()
-		.map(style -> style.instantiateBlock(FabricBlockSettings.copyOf(Blocks.REDSTONE_LAMP)))
-		.collect(Collectors.toList());
-	
+	public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(RegistryKeys.BLOCK, "dazzle");
+	public static final Map<String, Supplier<LampBlock>> LAMPS = LampStyle.ALL.stream()
+		.collect(Collectors.toMap(a -> a.toName(), style -> style.instantiateBlock(AbstractBlock.Settings.copy(Blocks.REDSTONE_LAMP)));
+
 	public static final LightSensorBlock LIGHT_SENSOR = new LightSensorBlock(FabricBlockSettings.copyOf(Blocks.OBSERVER));
 	public static final InvisibleTorchBlock INVISIBLE_TORCH = new InvisibleTorchBlock(FabricBlockSettings.copyOf(Blocks.TORCH)
 		.nonOpaque().noCollision().breakInstantly()
