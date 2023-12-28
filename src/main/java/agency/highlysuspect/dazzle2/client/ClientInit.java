@@ -3,101 +3,110 @@ package agency.highlysuspect.dazzle2.client;
 import agency.highlysuspect.dazzle2.block.ColorHolderBlock;
 import agency.highlysuspect.dazzle2.block.DazzleBlocks;
 import agency.highlysuspect.dazzle2.block.LampBlock;
-import agency.highlysuspect.dazzle2.etc.ColorEffect;
 import agency.highlysuspect.dazzle2.etc.DazzleParticleTypes;
+import agency.highlysuspect.dazzle2.etc.DyedEndRodParticleEffect;
 import agency.highlysuspect.dazzle2.etc.FlareParticleEffect;
 import agency.highlysuspect.dazzle2.item.DazzleItems;
 import com.google.common.eventbus.Subscribe;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 
+@Mod.EventBusSubscriber(modid = "dazzle", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientInit {
-	public ClientInit() {
+
+	@SubscribeEvent
+	public static void onInitializeClient(FMLClientSetupEvent event) {
 		assignBlockLayers();
-		createColorProviders();
-		registerParticles();
 	}
-	
+
 	private static void assignBlockLayers() {
 		final RenderLayer cutout = RenderLayer.getCutout();
 		final RenderLayer cutoutMipped = RenderLayer.getCutoutMipped();
 		final RenderLayer translucent = RenderLayer.getTranslucent();
 		
 		//need at least cutoutmipped so color providers work
-		DazzleBlocks.LAMPS.forEach(b -> BlockRenderLayerMap.INSTANCE.putBlock(b, b.style.theme.isTransparent ? translucent : cutoutMipped));
+		DazzleBlocks.LAMPS.forEach(b -> RenderLayers.setRenderLayer(b.get(), b.get().style.theme.isTransparent ? translucent : cutoutMipped));
 		
-		BlockRenderLayerMap.INSTANCE.putBlock(DazzleBlocks.INVISIBLE_TORCH, cutout);
-		BlockRenderLayerMap.INSTANCE.putBlock(DazzleBlocks.LIGHT_AIR, cutout);
-		BlockRenderLayerMap.INSTANCE.putBlock(DazzleBlocks.PROJECTED_LIGHT_PANEL, cutout);
-		
-		BlockRenderLayerMap.INSTANCE.putBlock(DazzleBlocks.DIM_REDSTONE_TORCH, cutout);
-		BlockRenderLayerMap.INSTANCE.putBlock(DazzleBlocks.DIM_REDSTONE_WALL_TORCH, cutout);
-		
+		RenderLayers.setRenderLayer(DazzleBlocks.INVISIBLE_TORCH.get(), cutout);
+		RenderLayers.setRenderLayer(DazzleBlocks.LIGHT_AIR.get(), cutout);
+		RenderLayers.setRenderLayer(DazzleBlocks.PROJECTED_LIGHT_PANEL.get(), cutout);
+
+		RenderLayers.setRenderLayer(DazzleBlocks.DIM_REDSTONE_TORCH.get(), cutout);
+		RenderLayers.setRenderLayer(DazzleBlocks.DIM_REDSTONE_WALL_TORCH.get(), cutout);
+
 		//need at least cutoutmipped so color providers work
 		//these use very odd opacity blending so i'll try the translucent layer
-		DazzleBlocks.DYED_SHROOMLIGHTS.values().forEach(b -> BlockRenderLayerMap.INSTANCE.putBlock(b, translucent));
-		DazzleBlocks.DYED_POLISHED_SHROOMLIGHTS.values().forEach(b -> BlockRenderLayerMap.INSTANCE.putBlock(b, translucent));
-		
-		DazzleBlocks.DYED_END_RODS.values().forEach(b -> BlockRenderLayerMap.INSTANCE.putBlock(b, cutoutMipped));
+		DazzleBlocks.DYED_SHROOMLIGHTS.values().forEach(b -> RenderLayers.setRenderLayer(b.get(), translucent));
+		DazzleBlocks.DYED_POLISHED_SHROOMLIGHTS.values().forEach(b -> RenderLayers.setRenderLayer(b.get(), translucent));
+
+		DazzleBlocks.DYED_END_RODS.values().forEach(b -> RenderLayers.setRenderLayer(b.get(), cutoutMipped));
 	}
-	
-	private static void createColorProviders() {
+
+	@OnlyIn(Dist.CLIENT)
+	@SubscribeEvent
+	public static void registerBlockColor(RegisterColorHandlersEvent.Block event) {
 		//Redstone lamps
-		ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> {
+		event.register((state, world, pos, tintIndex) -> {
 			LampBlock lamp = (LampBlock) state.getBlock();
 			return lamp(tintIndex, lamp.getColor(), lamp.lightFromState(state));
 		}, blocks(DazzleBlocks.LAMPS));
 
-		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+		//Flares
+		//Even though the block model itself is invisible, this is visible on blockcrack particles.
+		event.register((state, world, pos, tintIndex) -> ((ColorHolderBlock) state.getBlock()).getColor().getMapColor().color,
+			blocks(DazzleBlocks.FLARES.values()));
+
+		//Dyed shroomlights
+		event.register((state, world, pos, tintIndex) -> shroom(tintIndex, ((ColorHolderBlock) state.getBlock()).getColor()),
+			blocks(DazzleBlocks.DYED_SHROOMLIGHTS.values(), DazzleBlocks.DYED_POLISHED_SHROOMLIGHTS.values()));
+
+		//End rods
+		event.register((state, world, pos, tintIndex) -> rod(tintIndex, ((ColorHolderBlock) state.getBlock()).getColor()),
+			blocks(DazzleBlocks.DYED_END_RODS.values()));
+	}
+
+	@OnlyIn(Dist.CLIENT)
+	@SubscribeEvent
+	public static void registerItemColor(RegisterColorHandlersEvent.Item event) {
+		event.register((stack, tintIndex) -> {
 			LampBlock lamp = (LampBlock) ((BlockItem) stack.getItem()).getBlock();
 			return lamp(tintIndex, lamp.getColor(), 15);
 		}, items(DazzleItems.LAMPS));
 
-		//Flares
-		//Even though the block model itself is invisible, this is visible on blockcrack particles.
-		ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> ((ColorHolderBlock) state.getBlock()).getColor().getMapColor().color,
-			blocks(DazzleBlocks.FLARES.values()));
-
-		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> {
+		event.register((stack, tintIndex) -> {
 			if(tintIndex == 1) {
 				return ((ColorHolderBlock) ((BlockItem) stack.getItem()).getBlock()).getColor().getMapColor().color; //color
 			} else return 0xFFFFFF;
 		}, items(DazzleItems.FLARES.values()));
 
-		//Dyed shroomlights
-		ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> shroom(tintIndex, ((ColorHolderBlock) state.getBlock()).getColor()),
-			blocks(DazzleBlocks.DYED_SHROOMLIGHTS.values(), DazzleBlocks.DYED_POLISHED_SHROOMLIGHTS.values()));
-		
-		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> shroom(tintIndex, ((ColorHolderBlock) ((BlockItem) stack.getItem()).getBlock()).getColor()),
-			items(DazzleItems.DYED_SHROOMLIGHTS.values(), DazzleItems.DYED_POLISHED_SHROOMLIGHTS.values()));
-		
-		//End rods
-		ColorProviderRegistry.BLOCK.register((state, world, pos, tintIndex) -> rod(tintIndex, ((ColorHolderBlock) state.getBlock()).getColor()),
-			blocks(DazzleBlocks.DYED_END_RODS.values()));
-		
-		ColorProviderRegistry.ITEM.register((stack, tintIndex) -> rod(tintIndex, ((ColorHolderBlock) ((BlockItem) stack.getItem()).getBlock()).getColor()),
-			items(DazzleItems.DYED_END_RODS.values()));
+		event.register((stack, tintIndex) -> shroom(tintIndex, ((ColorHolderBlock) ((BlockItem) stack.getItem()).getBlock()).getColor()),
+				items(DazzleItems.DYED_SHROOMLIGHTS.values(), DazzleItems.DYED_POLISHED_SHROOMLIGHTS.values()));
+
+		event.register((stack, tintIndex) -> rod(tintIndex, ((ColorHolderBlock) ((BlockItem) stack.getItem()).getBlock()).getColor()),
+				items(DazzleItems.DYED_END_RODS.values()));
 	}
 
-	
-	
 	private static int multiplyAll(int color, float mult) {
 		return multiplyRgb(color, mult, mult, mult);
 	}
@@ -148,18 +157,18 @@ public class ClientInit {
 	
 	//Quick functions because java varargs are so unergonomic w/ collections
 	@SafeVarargs
-	private static <T> T[] conv(Class<T> javaSucks, Collection<? extends T>... listOfLists) {
+	private static <T> T[] conv(Class<T> javaSucks, Collection<RegistryObject<T>>... listOfLists) {
 		//noinspection unchecked
-		return Arrays.stream(listOfLists).flatMap(Collection::stream).toArray(i -> (T[]) Array.newInstance(javaSucks, i));
+		return Arrays.stream(listOfLists).flatMap(Collection::stream).map(RegistryObject::get).toArray(i -> (T[]) Array.newInstance(javaSucks, i));
 	}
 	
 	@SafeVarargs
-	private static Block[] blocks(Collection<? extends Block>... listOfLists) {
+	private static Block[] blocks(Collection<RegistryObject<Block>>... listOfLists) {
 		return conv(Block.class, listOfLists);
 	}
 	
 	@SafeVarargs
-	private static Item[] items(Collection<? extends Item>... listOfLists) {
+	private static Item[] items(Collection<RegistryObject<Item>>... listOfLists) {
 		return conv(Item.class, listOfLists);
 	}
 
@@ -169,9 +178,15 @@ public class ClientInit {
             @Nullable
             @Override
             public Particle createParticle(FlareParticleEffect parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-                return new FlareParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters.getColor()));
+                return new FlareParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters.getColor());
             }
         });
-		event.registerSpecial(DazzleParticleTypes.DYED_END_ROD.get(), (s) -> new DyedEndRodParticle.Factory(s));
+		event.registerSpecial(DazzleParticleTypes.DYED_END_ROD.get(), new ParticleFactory<>() {
+			@Nullable
+			@Override
+			public Particle createParticle(DyedEndRodParticleEffect parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+				return new DyedEndRodParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters.getColor());
+			}
+		});
 	}
 }
