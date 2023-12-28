@@ -3,26 +3,33 @@ package agency.highlysuspect.dazzle2.client;
 import agency.highlysuspect.dazzle2.block.ColorHolderBlock;
 import agency.highlysuspect.dazzle2.block.DazzleBlocks;
 import agency.highlysuspect.dazzle2.block.LampBlock;
+import agency.highlysuspect.dazzle2.etc.ColorEffect;
 import agency.highlysuspect.dazzle2.etc.DazzleParticleTypes;
+import agency.highlysuspect.dazzle2.etc.FlareParticleEffect;
 import agency.highlysuspect.dazzle2.item.DazzleItems;
+import com.google.common.eventbus.Subscribe;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class ClientInit implements ClientModInitializer {
-	@Override
-	public void onInitializeClient() {
+public class ClientInit {
+	public ClientInit() {
 		assignBlockLayers();
 		createColorProviders();
 		registerParticles();
@@ -155,9 +162,16 @@ public class ClientInit implements ClientModInitializer {
 	private static Item[] items(Collection<? extends Item>... listOfLists) {
 		return conv(Item.class, listOfLists);
 	}
-	
-	private static void registerParticles() {
-		ParticleFactoryRegistry.getInstance().register(DazzleParticleTypes.FLARE, FlareParticle.Factory::new);
-		ParticleFactoryRegistry.getInstance().register(DazzleParticleTypes.DYED_END_ROD, DyedEndRodParticle.Factory::new);
+
+	@Subscribe
+	private static void registerParticles(RegisterParticleProvidersEvent event) {
+		event.registerSpecial(DazzleParticleTypes.FLARE.get(), new ParticleFactory<>() {
+            @Nullable
+            @Override
+            public Particle createParticle(FlareParticleEffect parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+                return new FlareParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters.getColor()));
+            }
+        });
+		event.registerSpecial(DazzleParticleTypes.DYED_END_ROD.get(), (s) -> new DyedEndRodParticle.Factory(s));
 	}
 }

@@ -6,8 +6,8 @@ import net.minecraft.client.particle.*;
 import net.minecraft.client.world.ClientWorld;
 
 public class FlareParticle extends AnimatedParticle {
-	public FlareParticle(ClientWorld world, double x, double y, double z, double vx, double vy, double vz, int color, SpriteProvider spriteProvider) {
-		super(world, x, y, z, spriteProvider, 0);
+	public FlareParticle(ClientWorld world, double x, double y, double z, double vx, double vy, double vz, int color) {
+		super(world, x, y, z, null /*TODO: Remember to add proper vanilla one*/, 0);
 		
 		velocityX = Junk.rangeRemap(random.nextFloat(), 0, 1, -0.01f, 0.01f) + vx;
 		velocityY = Junk.rangeRemap(random.nextFloat(), 0, 1, 0.05f, 0.1f) + vy;
@@ -36,18 +36,5 @@ public class FlareParticle extends AnimatedParticle {
 	@Override
 	public ParticleTextureSheet getType() {
 		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
-	}
-	
-	public static final class Factory implements ParticleFactory<FlareParticleEffect> {
-		public Factory(SpriteProvider hoo) {
-			this.hoo = hoo;
-		}
-		
-		private final SpriteProvider hoo;
-		
-		@Override
-		public Particle createParticle(FlareParticleEffect parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-			return new FlareParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters.getColor(), hoo);
-		}
 	}
 }
