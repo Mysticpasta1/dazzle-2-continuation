@@ -1,6 +1,6 @@
 plugins {
-	id 'fabric-loom' version '0.12-SNAPSHOT'
-	id 'maven-publish'
+	id "dev.architectury.loom" version "1.3-SNAPSHOT"
+	id "maven-publish"
 }
 
 sourceCompatibility = JavaVersion.VERSION_17
@@ -22,16 +22,16 @@ dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+	forge "net.minecraftforge:forge:${project.forge_version}"
 }
 
 processResources {
+	// define properties that can be used during resource processing
 	inputs.property "version", project.version
 
-	filesMatching("fabric.mod.json") {
+	// this will replace the property "${version}" in your mods.toml
+	// with the version you've defined in your gradle.properties
+	filesMatching("META-INF/mods.toml") {
 		expand "version": project.version
 	}
 }
