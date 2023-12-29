@@ -42,7 +42,7 @@ public class DazzleBlocks {
 		.ticksRandomly()
 	));
 
-	public static final RegistryObject<ProjectedLightPanelBlock> PROJECTED_LIGHT_PANEL = BLOCKS.register("project_light_panel", () -> new ProjectedLightPanelBlock(AbstractBlock.Settings.copy(Blocks.BONE_BLOCK)
+	public static final RegistryObject<ProjectedLightPanelBlock> PROJECTED_LIGHT_PANEL = BLOCKS.register("projected_light_panel", () -> new ProjectedLightPanelBlock(AbstractBlock.Settings.copy(Blocks.BONE_BLOCK)
 		.luminance(state -> state.get(ProjectedLightPanelBlock.POWER))
 		.ticksRandomly()
 	));
@@ -75,7 +75,7 @@ public class DazzleBlocks {
 
 	public static final EnumMap<DyeColor, RegistryObject<ColorHolderBlock.Simple>> DYED_SHROOMLIGHTS = sixteenColors(color -> BLOCKS.register(color.asString() + "_shroomlight", () -> new ColorHolderBlock.Simple(color, AbstractBlock.Settings.copy(Blocks.SHROOMLIGHT).requiresTool().mapColor(color))));
 	public static final RegistryObject<Block> POLISHED_SHROOMLIGHT = BLOCKS.register("polished_shroomlight", () -> new Block(AbstractBlock.Settings.copy(Blocks.SHROOMLIGHT).requiresTool()));
-	public static final EnumMap<DyeColor, RegistryObject<ColorHolderBlock.Simple>> DYED_POLISHED_SHROOMLIGHTS = sixteenColors(color -> BLOCKS.register(color.asString() + "_shroomlight", () -> new ColorHolderBlock.Simple(color, AbstractBlock.Settings.copy(Blocks.SHROOMLIGHT).requiresTool().mapColor(color))));
+	public static final EnumMap<DyeColor, RegistryObject<ColorHolderBlock.Simple>> DYED_POLISHED_SHROOMLIGHTS = sixteenColors(color -> BLOCKS.register(color.asString() + "_polished_shroomlight", () -> new ColorHolderBlock.Simple(color, AbstractBlock.Settings.copy(Blocks.SHROOMLIGHT).requiresTool().mapColor(color))));
 	
 	public static final EnumMap<DyeColor, RegistryObject<DyedEndRodBlock>> DYED_END_RODS = sixteenColors(color -> BLOCKS.register(color.asString() + "_end_rod", ()  -> new DyedEndRodBlock(color, AbstractBlock.Settings.copy(Blocks.END_ROD).mapColor(color))));
 	

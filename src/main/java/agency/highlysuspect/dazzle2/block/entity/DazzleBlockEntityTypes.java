@@ -13,7 +13,7 @@ public class DazzleBlockEntityTypes {
 
 	public static final RegistryObject<BlockEntityType<LightSensorBlockEntity>> LIGHT_SENSOR = BLOCK_ENTITIES.register("light_sensor", () -> BlockEntityType.Builder.create(LightSensorBlockEntity::new, DazzleBlocks.LIGHT_SENSOR.get()).build(null));
 	public static final RegistryObject<BlockEntityType<LightAirBlockEntity>> LIGHT_AIR = BLOCK_ENTITIES.register("light_air", () -> BlockEntityType.Builder.create(LightAirBlockEntity::new, DazzleBlocks.LIGHT_AIR.get()).build(null));
-	public static final RegistryObject<BlockEntityType<FlareBlockEntity>> FLARE = BLOCK_ENTITIES.register("flare", () -> BlockEntityType.Builder.create(FlareBlockEntity::new, DazzleBlocks.FLARES.values().toArray(FlareBlock[]::new)).build(null));
+	public static final RegistryObject<BlockEntityType<FlareBlockEntity>> FLARE = BLOCK_ENTITIES.register("flare", () -> BlockEntityType.Builder.create(FlareBlockEntity::new, DazzleBlocks.FLARES.values().stream().map(RegistryObject::get).toArray(FlareBlock[]::new)).build(null));
 	
 	public static void onInitialize(IEventBus bus) {
 		BLOCK_ENTITIES.register(bus);
