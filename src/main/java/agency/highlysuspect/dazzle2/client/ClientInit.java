@@ -4,16 +4,11 @@ import agency.highlysuspect.dazzle2.block.ColorHolderBlock;
 import agency.highlysuspect.dazzle2.block.DazzleBlocks;
 import agency.highlysuspect.dazzle2.block.LampBlock;
 import agency.highlysuspect.dazzle2.etc.DazzleParticleTypes;
-import agency.highlysuspect.dazzle2.etc.DyedEndRodParticleEffect;
-import agency.highlysuspect.dazzle2.etc.FlareParticleEffect;
 import agency.highlysuspect.dazzle2.item.DazzleItems;
 import com.google.common.eventbus.Subscribe;
 import net.minecraft.block.Block;
-import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.DyeColor;
@@ -26,11 +21,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.RegistryObject;
-import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = "dazzle", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ClientInit {
@@ -70,20 +63,20 @@ public class ClientInit {
 		event.register((state, world, pos, tintIndex) -> {
 			LampBlock lamp = (LampBlock) state.getBlock();
 			return lamp(tintIndex, lamp.getColor(), lamp.lightFromState(state));
-		}, blocks(DazzleBlocks.LAMPS));
+		}, DazzleBlocks.LAMPS.stream().map(RegistryObject::get).toArray(Block[]::new));
 
 		//Flares
 		//Even though the block model itself is invisible, this is visible on blockcrack particles.
 		event.register((state, world, pos, tintIndex) -> ((ColorHolderBlock) state.getBlock()).getColor().getMapColor().color,
-			blocks(DazzleBlocks.FLARES.values()));
+			DazzleBlocks.FLARES.values().stream().map(RegistryObject::get).toArray(Block[]::new));
 
 		//Dyed shroomlights
 		event.register((state, world, pos, tintIndex) -> shroom(tintIndex, ((ColorHolderBlock) state.getBlock()).getColor()),
-			blocks(DazzleBlocks.DYED_SHROOMLIGHTS.values(), DazzleBlocks.DYED_POLISHED_SHROOMLIGHTS.values()));
+			Stream.of(DazzleBlocks.DYED_SHROOMLIGHTS.values(), DazzleBlocks.DYED_POLISHED_SHROOMLIGHTS.values()).flatMap(Collection::stream).map(RegistryObject::get).toArray(Block[]::new));
 
 		//End rods
 		event.register((state, world, pos, tintIndex) -> rod(tintIndex, ((ColorHolderBlock) state.getBlock()).getColor()),
-			blocks(DazzleBlocks.DYED_END_RODS.values()));
+			DazzleBlocks.DYED_END_RODS.values().stream().map(a -> a.get()).toArray(Block[]::new));
 	}
 
 	@OnlyIn(Dist.CLIENT)
@@ -92,19 +85,19 @@ public class ClientInit {
 		event.register((stack, tintIndex) -> {
 			LampBlock lamp = (LampBlock) ((BlockItem) stack.getItem()).getBlock();
 			return lamp(tintIndex, lamp.getColor(), 15);
-		}, items(DazzleItems.LAMPS));
+		}, DazzleItems.LAMPS.stream().map(RegistryObject::get).toArray(Item[]::new));
 
 		event.register((stack, tintIndex) -> {
 			if(tintIndex == 1) {
 				return ((ColorHolderBlock) ((BlockItem) stack.getItem()).getBlock()).getColor().getMapColor().color; //color
 			} else return 0xFFFFFF;
-		}, items(DazzleItems.FLARES.values()));
+		}, DazzleItems.FLARES.values().stream().map(RegistryObject::get).toArray(Item[]::new));
 
 		event.register((stack, tintIndex) -> shroom(tintIndex, ((ColorHolderBlock) ((BlockItem) stack.getItem()).getBlock()).getColor()),
-				items(DazzleItems.DYED_SHROOMLIGHTS.values(), DazzleItems.DYED_POLISHED_SHROOMLIGHTS.values()));
+				Stream.of(DazzleItems.DYED_SHROOMLIGHTS.values(), DazzleItems.DYED_POLISHED_SHROOMLIGHTS.values()).flatMap(Collection::stream).map(RegistryObject::get).toArray(Item[]::new));
 
 		event.register((stack, tintIndex) -> rod(tintIndex, ((ColorHolderBlock) ((BlockItem) stack.getItem()).getBlock()).getColor()),
-				items(DazzleItems.DYED_END_RODS.values()));
+				DazzleItems.DYED_END_RODS.values().stream().map(RegistryObject::get).toArray(Item[]::new));
 	}
 
 	private static int multiplyAll(int color, float mult) {
@@ -156,37 +149,25 @@ public class ClientInit {
 	}
 	
 	//Quick functions because java varargs are so unergonomic w/ collections
-	@SafeVarargs
-	private static <T> T[] conv(Class<T> javaSucks, Collection<RegistryObject<T>>... listOfLists) {
-		//noinspection unchecked
-		return Arrays.stream(listOfLists).flatMap(Collection::stream).map(RegistryObject::get).toArray(i -> (T[]) Array.newInstance(javaSucks, i));
-	}
-	
-	@SafeVarargs
-	private static Block[] blocks(Collection<RegistryObject<Block>>... listOfLists) {
-		return conv(Block.class, listOfLists);
-	}
-	
-	@SafeVarargs
-	private static Item[] items(Collection<RegistryObject<Item>>... listOfLists) {
-		return conv(Item.class, listOfLists);
-	}
+//	@SafeVarargs
+//	private static <T> T[] conv(Class<T> javaSucks, Collection<RegistryObject<T>>... listOfLists) {
+//		//noinspection unchecked
+//		return Arrays.stream(listOfLists).flatMap(Collection::stream).map(RegistryObject::get).toArray(i -> (T[]) Array.newInstance(javaSucks, i));
+//	}
+//
+//	@SafeVarargs
+//	private static Block[] blocks(Collection<RegistryObject<Block>>... listOfLists) {
+//		return conv(Block.class, listOfLists);
+//	}
+//
+//	@SafeVarargs
+//	private static Item[] items(Collection<RegistryObject<? extends Item>>... listOfLists) {
+//		return conv(Item.class, listOfLists);
+//	}
 
 	@Subscribe
 	private static void registerParticles(RegisterParticleProvidersEvent event) {
-		event.registerSpecial(DazzleParticleTypes.FLARE.get(), new ParticleFactory<>() {
-            @Nullable
-            @Override
-            public Particle createParticle(FlareParticleEffect parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-                return new FlareParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters.getColor());
-            }
-        });
-		event.registerSpecial(DazzleParticleTypes.DYED_END_ROD.get(), new ParticleFactory<>() {
-			@Nullable
-			@Override
-			public Particle createParticle(DyedEndRodParticleEffect parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-				return new DyedEndRodParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters.getColor());
-			}
-		});
+		event.registerSpecial(DazzleParticleTypes.FLARE.get(), (parameters, world, x, y, z, velocityX, velocityY, velocityZ) -> new FlareParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters.getColor()));
+		event.registerSpecial(DazzleParticleTypes.DYED_END_ROD.get(), (parameters, world, x, y, z, velocityX, velocityY, velocityZ) -> new DyedEndRodParticle(world, x, y, z, velocityX, velocityY, velocityZ, parameters.getColor()));
 	}
 }
