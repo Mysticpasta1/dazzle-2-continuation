@@ -6,12 +6,16 @@ import agency.highlysuspect.dazzle2.block.LampBlock;
 import agency.highlysuspect.dazzle2.etc.DazzleParticleTypes;
 import agency.highlysuspect.dazzle2.item.DazzleItems;
 import com.google.common.eventbus.Subscribe;
+import com.lowdragmc.shimmer.client.light.ColorPointLight;
+import com.lowdragmc.shimmer.client.light.LightManager;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -23,6 +27,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Collection;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(modid = "dazzle", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -31,6 +36,14 @@ public class ClientInit {
 	@SubscribeEvent
 	public static void onInitializeClient(FMLClientSetupEvent event) {
 		assignBlockLayers();
+
+		DazzleBlocks.LAMPS.stream().map(RegistryObject::get).forEach(a -> {
+			LightManager.INSTANCE.registerBlockLight(a, (blockState, blockPos) -> {
+				var color = a.getColor();
+
+				return new ColorPointLight.Template(a.lightFromState(blockState), color.getColorComponents()[0], color.getColorComponents()[1], (int) color.getColorComponents()[2], 1.0f);
+			});
+		});
 	}
 
 	private static void assignBlockLayers() {
