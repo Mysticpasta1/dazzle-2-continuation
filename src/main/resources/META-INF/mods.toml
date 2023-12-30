@@ -1,0 +1,31 @@
+modLoader="javafml" 
+loaderVersion="[47,)"
+license="LGPLv3 or later"
+issueTrackerURL=""
+
+[[mods]] 
+modId="dazzle"
+version="1.0.0-forge"
+displayName="Dazzle 2"
+displayURL=""
+logoFile= "assets/dazzle/icon.png"
+credits=''''''
+authors="quaternary, Mysticpasta1"
+description='''
+Lights to heat up rocks with.
+'''
+
+# Base
+[[dependencies.dazzle]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.dazzle]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1, 1.20.2)"
+    ordering="NONE"
+    side="BOTH"

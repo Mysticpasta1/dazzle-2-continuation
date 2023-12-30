@@ -10,9 +10,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class LampStyle {
@@ -46,8 +47,8 @@ public class LampStyle {
 	
 	public static BlockState findLampBlockstate(LampStyle.Color color, LampStyle.Theme theme, LampStyle.Mode mode) {
 		LampStyle yes = new LampStyle(color, theme, mode);
-		for(LampBlock haha : DazzleBlocks.LAMPS) {
-			if(haha.style.equals(yes)) return haha.getDefaultState();
+		for(var haha : DazzleBlocks.LAMPS) {
+			if(haha.get().style.equals(yes)) return haha.get().getDefaultState();
 		}
 		
 		return Blocks.AIR.getDefaultState();
@@ -61,12 +62,12 @@ public class LampStyle {
 		return Init.id(toName());
 	}
 	
-	public LampBlock instantiateBlock(Block.Settings settings) {
+	public Supplier<LampBlock> instantiateBlock(Block.Settings settings) {
 		return mode.constructor.apply(this, theme.processSettings(settings));
 	}
 	
 	public LampBlock lookupBlock() {
-		return (LampBlock) Registry.BLOCK.get(toIdentifier());
+		return (LampBlock) Registries.BLOCK.get(toIdentifier());
 	}
 
 	public LampStyle withMode(LampStyle.Mode newMode) {
@@ -146,16 +147,16 @@ public class LampStyle {
 	}
 	
 	public static class Mode implements Prop {
-		private Mode(String name, BiFunction<LampStyle, Block.Settings, LampBlock> constructor) {
+		private Mode(String name, BiFunction<LampStyle, Block.Settings, Supplier<LampBlock>> constructor) {
 			this.name = name;
 			this.constructor = constructor;
 		}
 		
 		public final String name;
-		public final BiFunction<LampStyle, Block.Settings, LampBlock> constructor;
+		public final BiFunction<LampStyle, Block.Settings, Supplier<LampBlock>> constructor;
 		
-		public static final Mode DIGITAL = new Mode("digital", LampBlock.Digital::new);
-		public static final Mode ANALOG = new Mode("analog", LampBlock.Analog::new);
+		public static final Mode DIGITAL = new Mode("digital", (style, settings) -> () -> new LampBlock.Digital(style, settings));
+		public static final Mode ANALOG = new Mode("analog", (style, settings) -> () -> new LampBlock.Analog(style, settings));
 		
 		public static final List<Mode> ALL = ImmutableList.of(DIGITAL, ANALOG);
 		

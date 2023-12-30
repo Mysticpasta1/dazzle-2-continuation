@@ -26,12 +26,12 @@ public class PotionEntityMixin {
 	private void whenApplyingSplashPotion(List<StatusEffectInstance> effects, Entity what, CallbackInfo ci) {
 		for(StatusEffectInstance inst : effects) {
 			if(inst.getEffectType() == StatusEffects.INVISIBILITY) {
-				World world = ((PotionEntity) (Object) this).world;
+				World world = ((PotionEntity) (Object) this).getWorld();
 				Box box = ((PotionEntity) (Object) this).getBoundingBox().expand(4, 2, 4);
 				BlockPos.stream(box).forEach(pos -> {
 					BlockState state = world.getBlockState(pos);
 					if(state.isIn(DazzleBlockTags.MAKE_INVISIBLE_TORCH)) {
-						world.setBlockState(pos, DazzleBlocks.INVISIBLE_TORCH.makeInvisible(world, pos, state));
+						world.setBlockState(pos, DazzleBlocks.INVISIBLE_TORCH.get().makeInvisible(world, pos, state));
 					}
 				});
 			}

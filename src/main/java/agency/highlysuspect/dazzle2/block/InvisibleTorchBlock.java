@@ -4,8 +4,6 @@ import agency.highlysuspect.dazzle2.Init;
 import agency.highlysuspect.dazzle2.Junk;
 import agency.highlysuspect.dazzle2.LampStyle;
 import agency.highlysuspect.dazzle2.item.DazzleItemTags;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
@@ -19,7 +17,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -30,13 +27,16 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import static net.minecraftforge.api.distmarker.Dist.CLIENT;
+
 public class InvisibleTorchBlock extends Block {
 	public InvisibleTorchBlock(Settings settings) {
-		super(settings);
+		super(settings.pistonBehavior(PistonBehavior.DESTROY));
 		
 		setDefaultState(getDefaultState().with(LIGHT, 15).with(FACING, Direction.DOWN));
 	}
@@ -90,14 +90,9 @@ public class InvisibleTorchBlock extends Block {
 			if(nextLevel == 16) nextLevel = 1;
 			
 			world.setBlockState(pos, state.with(LIGHT, nextLevel));
-			world.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK, SoundCategory.BLOCKS, 0.6f, nextLevel / 15f + 0.5f);
+			world.playSound(null, pos, SoundEvents.UI_BUTTON_CLICK.value(), SoundCategory.BLOCKS, 0.6f, nextLevel / 15f + 0.5f);
 			return ActionResult.SUCCESS;
 		} else return super.onUse(state, world, pos, player, hand, hit);
-	}
-	
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
 	}
 	
 	@Override
@@ -119,9 +114,9 @@ public class InvisibleTorchBlock extends Block {
 		return VoxelShapes.empty();
 	}
 	
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-		tooltip.add(new TranslatableText("dazzle.craft_invisible_torch"));
+		tooltip.add(Text.translatable("dazzle.craft_invisible_torch"));
 	}
 }

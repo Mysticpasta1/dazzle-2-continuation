@@ -32,13 +32,13 @@ public class LightSensorBlock extends Block implements BlockEntityProvider {
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return DazzleBlockEntityTypes.LIGHT_SENSOR.instantiate(pos, state);
+		return DazzleBlockEntityTypes.LIGHT_SENSOR.get().instantiate(pos, state);
 	}
 	
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		if(!world.isClient) return Util.castTicker(type, DazzleBlockEntityTypes.LIGHT_SENSOR, LightSensorBlockEntity::tickServer);
+		if(!world.isClient) return Util.castTicker(type, DazzleBlockEntityTypes.LIGHT_SENSOR.get(), LightSensorBlockEntity::tickServer);
 		else return null;
 	}
 	
@@ -70,7 +70,7 @@ public class LightSensorBlock extends Block implements BlockEntityProvider {
 	protected int power(BlockState state, BlockView world, BlockPos pos, Direction direction) {
 		if(state.get(FACING) != direction) return 0;
 		
-		LightSensorBlockEntity be = DazzleBlockEntityTypes.LIGHT_SENSOR.get(world, pos);
+		LightSensorBlockEntity be = DazzleBlockEntityTypes.LIGHT_SENSOR.get().get(world, pos);
 		return be == null ? 0 : be.getPower();
 	}
 }

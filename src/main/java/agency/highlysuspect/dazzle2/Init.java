@@ -6,12 +6,14 @@ import agency.highlysuspect.dazzle2.block.entity.DazzleBlockEntityTypes;
 import agency.highlysuspect.dazzle2.etc.DazzleParticleTypes;
 import agency.highlysuspect.dazzle2.item.DazzleItemTags;
 import agency.highlysuspect.dazzle2.item.DazzleItems;
-import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Init implements ModInitializer {
+@Mod(Init.MODID)
+public class Init {
 	public static final String MODID = "dazzle";
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
 	
@@ -24,16 +26,16 @@ public class Init implements ModInitializer {
 	public static void log(String msg, Object... fmt) {
 		LOGGER.info(msg, fmt);
 	}
-	
-	@Override
-	public void onInitialize() {
-		DazzleBlocks.onInitialize();
+
+	public Init() {
+		var bus = FMLJavaModLoadingContext.get().getModEventBus();
+		DazzleBlocks.onInitialize(bus);
 		DazzleBlockTags.onInitialize();
-		DazzleBlockEntityTypes.onInitialize();
+		DazzleBlockEntityTypes.onInitialize(bus);
 		
-		DazzleItems.onInitialize();
+		DazzleItems.onInitialize(bus);
 		DazzleItemTags.onInitialize();
-		
-		DazzleParticleTypes.onInitialize();
+
+		DazzleParticleTypes.onInitialize(bus);
 	}
 }

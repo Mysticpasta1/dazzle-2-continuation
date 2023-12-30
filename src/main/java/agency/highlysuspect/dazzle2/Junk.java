@@ -6,7 +6,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.WallTorchBlock;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.Items;
-import net.minecraft.item.WallStandingBlockItem;
+import net.minecraft.item.VerticallyAttachableBlockItem;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public class Junk {
 	public static Optional<Direction> whatWouldTorchusDo(ItemPlacementContext ctx) {
-		WallStandingBlockItem wsbi = (WallStandingBlockItem) Items.TORCH;
+		VerticallyAttachableBlockItem wsbi = (VerticallyAttachableBlockItem) Items.TORCH;
 		BlockState torchState = ((WallStandingBlockItemMixin) wsbi).funkyGetPlacementState(ctx);
 		
 		if(torchState == null) return Optional.empty();

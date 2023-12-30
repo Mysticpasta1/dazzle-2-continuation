@@ -23,7 +23,7 @@ public class AreaEffectCloudEntityMixin {
 		)
 	)
 	private void whatTicking(CallbackInfo ci) {
-		World world = ((AreaEffectCloudEntity) (Object) this).world;
+		World world = ((AreaEffectCloudEntity) (Object) this).getWorld();
 		if(world == null) return; //lol
 		
 		Box box = ((AreaEffectCloudEntity) (Object) this).getBoundingBox();
@@ -31,7 +31,7 @@ public class AreaEffectCloudEntityMixin {
 		BlockPos.stream(box).forEach(pos -> {
 			BlockState state = world.getBlockState(pos);
 			if(state.isIn(DazzleBlockTags.MAKE_INVISIBLE_TORCH)) {
-				world.setBlockState(pos, DazzleBlocks.INVISIBLE_TORCH.makeInvisible(world, pos, state));
+				world.setBlockState(pos, DazzleBlocks.INVISIBLE_TORCH.get().makeInvisible(world, pos, state));
 			}
 		});
 	}

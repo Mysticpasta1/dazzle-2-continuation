@@ -2,8 +2,6 @@ package agency.highlysuspect.dazzle2.block;
 
 import agency.highlysuspect.dazzle2.block.entity.DazzleBlockEntityTypes;
 import agency.highlysuspect.dazzle2.block.entity.LightAirBlockEntity;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -20,22 +18,24 @@ import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Random;
+
+import static net.minecraftforge.api.distmarker.Dist.CLIENT;
 
 public class ProjectedLightPanelBlock extends Block {
 	public ProjectedLightPanelBlock(Settings settings) {
-		super(settings);
+		super(settings.pistonBehavior(PistonBehavior.DESTROY));
 		
 		setDefaultState(getDefaultState().with(FACING, Direction.NORTH).with(POWER, 0));
 	}
@@ -93,15 +93,10 @@ public class ProjectedLightPanelBlock extends Block {
 		Direction facing = state.get(FACING);
 		for(int i = 1; i < MAX_BEAM_LENGTH; i++) {
 			BlockPos p = pos.offset(facing, i);
-			LightAirBlockEntity be = DazzleBlockEntityTypes.LIGHT_AIR.get(world, p);
+			LightAirBlockEntity be = DazzleBlockEntityTypes.LIGHT_AIR.get().get(world, p);
 			if(be == null) continue;
 			if(be.belongsTo(pos)) world.setBlockState(p, Blocks.AIR.getDefaultState());
 		}
-	}
-	
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
 	}
 	
 	@Override
@@ -126,7 +121,7 @@ public class ProjectedLightPanelBlock extends Block {
 		for(int i = 1; i < MAX_BEAM_LENGTH; i++) {
 			BlockPos offsetPos = panelPos.offset(facing, i);
 			BlockState stateThere = world.getBlockState(offsetPos);
-			if(stateThere.isAir() || stateThere.isOf(DazzleBlocks.LIGHT_AIR) || stateThere.canReplace(automatically)) {
+			if(stateThere.isAir() || stateThere.isOf(DazzleBlocks.LIGHT_AIR.get()) || stateThere.canReplace(automatically)) {
 				setOrBreakLight(world, panelPos, offsetPos, hitWall ? 0 : MathHelper.clamp(panelPower - ((i - 1) / BEAM_SEGMENT_LENGTH), 0, 15));
 			} else {
 				hitWall = true;
@@ -135,19 +130,19 @@ public class ProjectedLightPanelBlock extends Block {
 	}
 	
 	private void setOrBreakLight(World world, BlockPos panelPos, BlockPos pos, int level) {
-		LightAirBlockEntity be = DazzleBlockEntityTypes.LIGHT_AIR.get(world, pos);
+		LightAirBlockEntity be = DazzleBlockEntityTypes.LIGHT_AIR.get().get(world, pos);
 		if(be != null && !be.belongsTo(panelPos)) {
 			int lightLevelThere = world.getBlockState(pos).get(LightAirBlock.LIGHT);
 			if(lightLevelThere > level) return; //Don't bother
 		}
 		
 		//this method handles the case of placing a light source emitting zero light = placing air
-		DazzleBlocks.LIGHT_AIR.placeWithOwner(world, pos, level, panelPos);
+		DazzleBlocks.LIGHT_AIR.get().placeWithOwner(world, pos, level, panelPos);
 	}
 	
-	@Environment(EnvType.CLIENT)
+	@OnlyIn(CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
-		tooltip.add(new TranslatableText("dazzle.lmao"));
+		tooltip.add(Text.translatable("dazzle.lmao"));
 	}
 }

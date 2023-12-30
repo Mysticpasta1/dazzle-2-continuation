@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 
 public class LightSensorBlockEntity extends BlockEntity {
 	public LightSensorBlockEntity(BlockPos pos, BlockState state) {
-		super(DazzleBlockEntityTypes.LIGHT_SENSOR, pos, state);
+		super(DazzleBlockEntityTypes.LIGHT_SENSOR.get(), pos, state);
 	}
 	
 	private int light;
